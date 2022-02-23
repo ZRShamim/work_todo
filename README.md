@@ -1,6 +1,16 @@
 # work_to_doo
 
-A new Flutter project.
+A todo app. initial design done.
+
+# Screenshots
+Initial Design
+<img src="https://raw.githubusercontent.com/ZRShamim/work_todo/main/assets/app%20screenshot/home_page.png" width=270 >
+<img src="https://raw.githubusercontent.com/ZRShamim/work_todo/main/assets/app%20screenshot/pending_work_page.png" width=270 >
+<img src="https://raw.githubusercontent.com/ZRShamim/work_todo/main/assets/app%20screenshot/add_task_page.png" width=270 >
+
+
+
+
 
 ## Getting Started
 
