@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class ToDoCard extends StatelessWidget {
   const ToDoCard({
     Key? key,
     required this.isDone,
+    required this.title,
+    required this.description,
+    required this.time,
   }) : super(key: key);
 
+  final String title;
+  final String description;
+  final DateTime time;
   final bool isDone;
 
   @override
@@ -15,12 +22,12 @@ class ToDoCard extends StatelessWidget {
       margin: const EdgeInsets.symmetric(
         vertical: 5,
       ),
-      height: isDone? 70 : 100,
+      height: isDone ? 70 : 100,
       width: screenWidth * 0.9,
       decoration: BoxDecoration(
-        border:  isDone == true?null : Border.all(color: Colors.green),
-        borderRadius:BorderRadius.circular(8),
-        color: isDone == true? Colors.grey[300] : null,
+        border: isDone == true ? null : Border.all(color: Colors.green),
+        borderRadius: BorderRadius.circular(8),
+        color: isDone == true ? Colors.grey[300] : null,
       ),
       child: Padding(
         padding: const EdgeInsets.all(10),
@@ -41,12 +48,12 @@ class ToDoCard extends StatelessWidget {
                     ),
                     SizedBox(
                       width: screenWidth * 0.65,
-                      child: const Text(
-                        'Here will be the todo title more more more more more more',
+                      child: Text(
+                        title,
                         softWrap: true,
                         overflow: TextOverflow.ellipsis,
                         maxLines: 1,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 15,
                         ),
@@ -57,23 +64,23 @@ class ToDoCard extends StatelessWidget {
                 const SizedBox(
                   height: 10,
                 ),
-                if(isDone == false)
-                SizedBox(
-                  width: screenWidth * 0.75,
-                  child: const Text(
-                    'Here a user can see his/her task todo, it will be max two lines and other line will be opted',
-                    softWrap: true,
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 2,
+                if (isDone == false)
+                  SizedBox(
+                    width: screenWidth * 0.75,
+                    child: Text(
+                      description,
+                      softWrap: true,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
+                    ),
                   ),
-                ),
-                if(isDone == false)
-                const SizedBox(
-                  height: 10,
-                ),
-                const Text(
-                  '10:49 AM Feb 17,2022',
-                  style: TextStyle(
+                if (isDone == false)
+                  const SizedBox(
+                    height: 10,
+                  ),
+                Text(
+                  DateFormat('yyyy-MM-dd kk:mm').format(time),
+                  style: const TextStyle(
                     fontWeight: FontWeight.w300,
                   ),
                 )

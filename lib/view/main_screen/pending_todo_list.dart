@@ -1,5 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:work_to_doo/view/main_screen/task_screen.dart';
 
 import 'widgets/todo_card.dart';
 
@@ -12,7 +14,6 @@ class PendingToDoList extends StatelessWidget {
   final bool isDone;
   @override
   Widget build(BuildContext context) {
-    
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -42,16 +43,44 @@ class PendingToDoList extends StatelessWidget {
           )
         ],
       ),
-      body: ListView.builder(
-          itemCount: 10,
-          itemBuilder: (context, i) {
-            return const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 15),
-              child: ToDoCard(isDone: false,),
-            );
+      body: StreamBuilder(
+          stream: FirebaseFirestore.instance
+              .collection('todo')
+              .orderBy('time', descending: true)
+              .snapshots(),
+          builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            } else {
+              var todoItems = snapshot.data!.docs;
+              return ListView.builder(
+                  itemCount: todoItems.length,
+                  itemBuilder: (_, index) {
+                    return InkWell(
+                      onTap: () {
+                        print(FirebaseFirestore.instance.collection('todo').doc());
+                        Get.to(
+                          () => TaskScreen(
+                            title: todoItems[index]['title'],
+                            description: todoItems[index]['description'],
+                            time: todoItems[index]['time'].toDate(),
+                            subtask: todoItems[index]['subtask'],
+                            index:index,
+                          ),
+                        );
+                      },
+                      child: ToDoCard(
+                        isDone: todoItems[index]['isdone'],
+                        title: todoItems[index]['title'],
+                        description: todoItems[index]['description'],
+                        time: todoItems[index]['time'].toDate(),
+                      ),
+                    );
+                  });
+            }
           }),
     );
   }
 }
-
-

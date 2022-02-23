@@ -1,22 +1,22 @@
-import 'package:flutter/material.dart';
+// import 'package:flutter/material.dart';
 
-import './todo_card.dart';
+// import './todo_card.dart';
 
-class ToDoListNew extends StatelessWidget {
-  const ToDoListNew({
-    required this.isDone,
-    Key? key,
-  }) : super(key: key);
+// class ToDoListNew extends StatelessWidget {
+//   const ToDoListNew({
+//     required this.isDone,
+//     Key? key,
+//   }) : super(key: key);
 
-  final bool isDone;
+//   final bool isDone;
 
-  @override
-  Widget build(BuildContext context) {
+//   @override
+//   Widget build(BuildContext context) {
     
-    return Column(
-      children: List.generate(3, (index) {
-        return ToDoCard(isDone: isDone);
-      }),
-    );
-  }
-}
+//     return Column(
+//       children: List.generate(3, (index) {
+//         return ToDoCard(isDone: isDone);
+//       }),
+//     );
+//   }
+// }
