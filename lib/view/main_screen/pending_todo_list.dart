@@ -55,19 +55,25 @@ class PendingToDoList extends StatelessWidget {
               );
             } else {
               var todoItems = snapshot.data!.docs;
+              print(FirebaseFirestore.instance
+                  .collection('todo')
+                  .get()
+                  .then((value) => value));
               return ListView.builder(
                   itemCount: todoItems.length,
                   itemBuilder: (_, index) {
                     return InkWell(
                       onTap: () {
-                        print(FirebaseFirestore.instance.collection('todo').doc());
                         Get.to(
                           () => TaskScreen(
+                            taskId: todoItems[index]['id'],
                             title: todoItems[index]['title'],
                             description: todoItems[index]['description'],
                             time: todoItems[index]['time'].toDate(),
                             subtask: todoItems[index]['subtask'],
-                            index:index,
+                            index: index,
+                            isDone: todoItems[index]['isdone'],
+                            userId: todoItems[index]['userid'],
                           ),
                         );
                       },

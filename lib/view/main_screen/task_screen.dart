@@ -6,39 +6,51 @@ import 'package:intl/intl.dart';
 class TaskScreen extends StatelessWidget {
   const TaskScreen({
     Key? key,
+    required this.taskId,
     required this.title,
     required this.description,
     required this.time,
     required this.subtask,
     required this.index,
+    required this.userId,
+    required this.isDone,
   }) : super(key: key);
 
+  final String taskId;
   final String title;
   final String description;
   final DateTime time;
   final List subtask;
   final int index;
-
-  // Future<void> addToDo(String title, String description, int index) async {
-  //   try {
-  //     var collection = await FirebaseFirestore.instance.collection('todo').doc().id;
-  //     collection.add({
-  //       'title': title,
-  //       'description': description,
-  //       'time': Timestamp.now(),
-  //       'userid': '101',
-  //       'isdone': false,
-  //       'subtask':[],
-  //     });
-  //   } catch (e) {
-  //     print(e);
-  //   }
-  // }
+  final String userId;
+  final bool isDone;
 
   @override
   Widget build(BuildContext context) {
     // var screenWidth = MediaQuery.of(context).size.width;
+    final TextEditingController subTaskController = TextEditingController();
+
     var screenHeight = MediaQuery.of(context).size.height;
+
+    void addSubTask() {
+      if (subTaskController.text.isNotEmpty) {
+        subtask.add({"description": subTaskController.text, "isdone": false});
+        subTaskController.clear();
+        FocusScope.of(context).unfocus();
+
+        FirebaseFirestore instance = FirebaseFirestore.instance;
+        instance.collection('todo').doc(taskId).set({
+          'id': taskId,
+          'title': title,
+          'description': description,
+          'time': time,
+          'userid': userId,
+          'isdone': isDone,
+          'subtask': subtask,
+        });
+      }
+    }
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -47,17 +59,12 @@ class TaskScreen extends StatelessWidget {
           style: TextStyle(color: Colors.black),
         ),
         leading: IconButton(
-          onPressed: () {
-            // Get.back();
-          },
-          icon: IconButton(
-              onPressed: () => Get.back(),
-              icon: const Icon(
-                Icons.arrow_back_ios,
-                size: 18,
-                color: Colors.black,
-              )),
-        ),
+            onPressed: () => Get.back(),
+            icon: const Icon(
+              Icons.arrow_back_ios,
+              size: 18,
+              color: Colors.black,
+            )),
         elevation: 0,
         backgroundColor: Colors.white,
         centerTitle: true,
@@ -97,21 +104,14 @@ class TaskScreen extends StatelessWidget {
                   ),
                   Text(
                     DateFormat('yyyy-MM-dd kk:mm').format(time),
-                    // DateFormat('yyyy-MM-dd kk:mm').format(time),
                     style: const TextStyle(
                       fontWeight: FontWeight.w300,
                     ),
-                  ),
-                  const SizedBox(
-                    height: 10,
                   ),
                 ],
               ),
             ),
           ),
-          // const SizedBox(
-          //   height: 10,
-          // ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Container(
@@ -124,8 +124,12 @@ class TaskScreen extends StatelessWidget {
                   horizontal: 10,
                 ),
                 child: TextFormField(
+                  controller: subTaskController,
+                  onEditingComplete: addSubTask,
                   decoration: const InputDecoration(
-                      labelText: 'Enter Task', border: InputBorder.none),
+                    labelText: 'Enter Task',
+                    border: InputBorder.none,
+                  ),
                 ),
               ),
             ),
@@ -133,7 +137,7 @@ class TaskScreen extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child: TextButton.icon(
-                onPressed: () {},
+                onPressed: addSubTask,
                 icon: const Icon(
                   Icons.add,
                   color: Color.fromARGB(255, 76, 175, 158),
@@ -150,9 +154,12 @@ class TaskScreen extends StatelessWidget {
             child: ListView.builder(
               itemCount: subtask.length,
               itemBuilder: (context, index) {
-                return SubTask(
-                  description: subtask[index]['description'],
-                  isdone: subtask[index]['isdone'],
+                return InkWell(
+                  onLongPress: (() {}),
+                  child: SubTask(
+                    description: subtask[index]['description'],
+                    isdone: subtask[index]['isdone'],
+                  ),
                 );
               },
             ),
@@ -160,7 +167,9 @@ class TaskScreen extends StatelessWidget {
           const SizedBox(
             height: 10,
           ),
-          BottomButton(),
+          BottomButton(
+            taskId: taskId,
+          ),
         ],
       ),
     );
@@ -170,7 +179,10 @@ class TaskScreen extends StatelessWidget {
 class BottomButton extends StatelessWidget {
   const BottomButton({
     Key? key,
+    required this.taskId,
   }) : super(key: key);
+
+  final String taskId;
 
   @override
   Widget build(BuildContext context) {
@@ -201,18 +213,27 @@ class BottomButton extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.all(15),
             decoration: BoxDecoration(border: Border.all(color: Colors.red)),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
-                Text(
-                  'Delete Task',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w500,
-                    color: Colors.red,
-                    fontSize: 15,
+            child: InkWell(
+              onTap: () {
+                FirebaseFirestore.instance
+                    .collection('todo')
+                    .doc(taskId)
+                    .delete();
+                Get.back();
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  Text(
+                    'Delete Task',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w500,
+                      color: Colors.red,
+                      fontSize: 15,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         )

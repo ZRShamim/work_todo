@@ -9,14 +9,16 @@ class AddToDO extends StatelessWidget {
 
   Future<void> addToDo(String title, String description) async {
     try {
-      var collection = await FirebaseFirestore.instance.collection('todo');
-      collection.add({
+      var collection = FirebaseFirestore.instance.collection('todo').doc();
+      collection.set({
+        'id': collection.id,
         'title': title,
         'description': description,
         'time': Timestamp.now(),
         'userid': '101',
         'isdone': false,
         'subtask':[],
+        // 'id':FirebaseFirestore.instance.collection('todo').doc().id,
       });
     } catch (e) {
       print(e);

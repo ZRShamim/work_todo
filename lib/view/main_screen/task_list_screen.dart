@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:work_to_doo/view/main_screen/add_todo_screen.dart';
@@ -102,7 +101,7 @@ class TaskListScreen extends StatelessWidget {
                       return ListView.builder(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
-                        itemCount: 3,
+                        itemCount: todoItems.length > 3 ? 3 : todoItems.length,
                         itemBuilder: (_, index) {
                           return ToDoCard(
                             isDone: todoItems[index]['isdone'],
