@@ -55,11 +55,12 @@ class PendingToDoList extends StatelessWidget {
               );
             } else {
               var todoItems = snapshot.data!.docs;
-              print(FirebaseFirestore.instance
-                  .collection('todo')
-                  .get()
-                  .then((value) => value));
-              return ListView.builder(
+              
+              return todoItems.isEmpty? const Center(
+                child: Text(
+                  'No task pending task available.'
+                ),
+              ) : ListView.builder(
                   itemCount: todoItems.length,
                   itemBuilder: (_, index) {
                     return InkWell(
@@ -71,7 +72,6 @@ class PendingToDoList extends StatelessWidget {
                             description: todoItems[index]['description'],
                             time: todoItems[index]['time'].toDate(),
                             subtask: todoItems[index]['subtask'],
-                            index: index,
                             isDone: todoItems[index]['isdone'],
                             userId: todoItems[index]['userid'],
                           ),

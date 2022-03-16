@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:work_to_doo/view/main_screen/add_todo_screen.dart';
 import 'pending_todo_list.dart';
+import 'task_screen.dart';
 import 'widgets/todo_card.dart';
 
 class TaskListScreen extends StatelessWidget {
@@ -95,21 +96,37 @@ class TaskListScreen extends StatelessWidget {
                       return const Center(
                         child: CircularProgressIndicator(),
                       );
-                    }
-                    else{
+                    } else {
                       var todoItems = snapshot.data!.docs;
                       return ListView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: todoItems.length > 3 ? 3 : todoItems.length,
-                        itemBuilder: (_, index) {
-                          return ToDoCard(
-                            isDone: todoItems[index]['isdone'],
-                            title: todoItems[index]['title'],
-                            description: todoItems[index]['description'],
-                            time: todoItems[index]['time'].toDate(),
-                          );
-                        });
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount:
+                              todoItems.length > 3 ? 3 : todoItems.length,
+                          itemBuilder: (_, index) {
+                            return InkWell(
+                              onTap: () {
+                                Get.to(
+                                  () => TaskScreen(
+                                    taskId: todoItems[index]['id'],
+                                    title: todoItems[index]['title'],
+                                    description: todoItems[index]
+                                        ['description'],
+                                    time: todoItems[index]['time'].toDate(),
+                                    subtask: todoItems[index]['subtask'],
+                                    isDone: todoItems[index]['isdone'],
+                                    userId: todoItems[index]['userid'],
+                                  ),
+                                );
+                              },
+                              child: ToDoCard(
+                                isDone: todoItems[index]['isdone'],
+                                title: todoItems[index]['title'],
+                                description: todoItems[index]['description'],
+                                time: todoItems[index]['time'].toDate(),
+                              ),
+                            );
+                          });
                     }
                   })
             ],

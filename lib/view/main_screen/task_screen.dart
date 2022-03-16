@@ -11,7 +11,6 @@ class TaskScreen extends StatelessWidget {
     required this.description,
     required this.time,
     required this.subtask,
-    required this.index,
     required this.userId,
     required this.isDone,
   }) : super(key: key);
@@ -21,7 +20,6 @@ class TaskScreen extends StatelessWidget {
   final String description;
   final DateTime time;
   final List subtask;
-  final int index;
   final String userId;
   final bool isDone;
 
@@ -210,17 +208,17 @@ class BottomButton extends StatelessWidget {
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-          child: Container(
-            padding: const EdgeInsets.all(15),
-            decoration: BoxDecoration(border: Border.all(color: Colors.red)),
-            child: InkWell(
-              onTap: () {
-                FirebaseFirestore.instance
-                    .collection('todo')
-                    .doc(taskId)
-                    .delete();
-                Get.back();
-              },
+          child: InkWell(
+            onTap: () {
+            // FirebaseFirestore.instance
+            //     .collection('todo')
+            //     .doc(taskId)
+            //     .delete();
+            Get.back();
+          },
+            child: Container(
+              padding: const EdgeInsets.all(15),
+              decoration: BoxDecoration(border: Border.all(color: Colors.red)),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: const [
