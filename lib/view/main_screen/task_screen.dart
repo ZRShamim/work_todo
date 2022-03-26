@@ -23,18 +23,11 @@ class TaskScreen extends StatelessWidget {
   final String userId;
   final bool isDone;
 
-  @override
-  Widget build(BuildContext context) {
-    // var screenWidth = MediaQuery.of(context).size.width;
-    final TextEditingController subTaskController = TextEditingController();
-
-    var screenHeight = MediaQuery.of(context).size.height;
-
-    void addSubTask() {
+  void addSubTask(TextEditingController subTaskController, BuildContext ctx) {
       if (subTaskController.text.isNotEmpty) {
         subtask.add({"description": subTaskController.text, "isdone": false});
         subTaskController.clear();
-        FocusScope.of(context).unfocus();
+        FocusScope.of(ctx).unfocus();
 
         FirebaseFirestore instance = FirebaseFirestore.instance;
         instance.collection('todo').doc(taskId).set({
@@ -48,6 +41,21 @@ class TaskScreen extends StatelessWidget {
         });
       }
     }
+
+    void updateSubTask(int index) {
+      subtask[index]['isdone'] = !subtask[index]['isdone'];
+      print(subtask[index]['isdone']);
+    }
+
+  @override
+  Widget build(BuildContext context) {
+    // var screenWidth = MediaQuery.of(context).size.width;
+
+    final TextEditingController subTaskController = TextEditingController();
+
+    // var screenHeight = MediaQuery.of(context).size.height;
+
+    
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -123,7 +131,7 @@ class TaskScreen extends StatelessWidget {
                 ),
                 child: TextFormField(
                   controller: subTaskController,
-                  onEditingComplete: addSubTask,
+                  onEditingComplete: () => addSubTask(subTaskController, context),
                   decoration: const InputDecoration(
                     labelText: 'Enter Task',
                     border: InputBorder.none,
@@ -135,7 +143,7 @@ class TaskScreen extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child: TextButton.icon(
-                onPressed: addSubTask,
+                onPressed: () => addSubTask(subTaskController, context),
                 icon: const Icon(
                   Icons.add,
                   color: Color.fromARGB(255, 76, 175, 158),
@@ -152,12 +160,10 @@ class TaskScreen extends StatelessWidget {
             child: ListView.builder(
               itemCount: subtask.length,
               itemBuilder: (context, index) {
-                return InkWell(
-                  onLongPress: (() {}),
-                  child: SubTask(
-                    description: subtask[index]['description'],
-                    isdone: subtask[index]['isdone'],
-                  ),
+                return SubTask(
+                  description: subtask[index]['description'],
+                  isdone: subtask[index]['isdone'],
+                  updateSubTask: () => updateSubTask(index),
                 );
               },
             ),
@@ -210,12 +216,8 @@ class BottomButton extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
           child: InkWell(
             onTap: () {
-            // FirebaseFirestore.instance
-            //     .collection('todo')
-            //     .doc(taskId)
-            //     .delete();
-            Get.back();
-          },
+              Get.back();
+            },
             child: Container(
               padding: const EdgeInsets.all(15),
               decoration: BoxDecoration(border: Border.all(color: Colors.red)),
@@ -241,40 +243,71 @@ class BottomButton extends StatelessWidget {
 }
 
 class SubTask extends StatelessWidget {
-  const SubTask({
+  SubTask({
     Key? key,
     required this.description,
-    required this.isdone,
+    required this.isdone, required this.updateSubTask,
   }) : super(key: key);
 
   final String description;
   final bool isdone;
+  final Function updateSubTask;
+
+  var isExpanded = false.obs;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-        decoration: BoxDecoration(
-          color: Colors.green[50],
-          borderRadius: BorderRadius.circular(6),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              description,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 15,
+    return InkWell(
+      onLongPress: () => isExpanded.value = !isExpanded.value,
+      onTap: () => isExpanded.value = false,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+          decoration: BoxDecoration(
+            color: Colors.green[50],
+            borderRadius: BorderRadius.circular(6),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                description,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
+                ),
               ),
-            ),
-            const Icon(
-              Icons.fiber_manual_record_outlined,
-              size: 14,
-            ),
-          ],
+              Obx(
+                () => isExpanded.value == false
+                    ? const Icon(
+                        Icons.fiber_manual_record_outlined,
+                        size: 14,
+                      )
+                    : Row(
+                        children: [
+                          IconButton(
+                            onPressed: () {},
+                            icon: const Icon(
+                              Icons.delete,
+                              color: Colors.red,
+                            ),
+                          ),
+                          const SizedBox(
+                            width: 15,
+                          ),
+                          IconButton(
+                            onPressed: () => updateSubTask,
+                            icon: const Icon(
+                              Icons.check_outlined,
+                              color: Colors.blueAccent,
+                            ),
+                          ),
+                        ],
+                      ),
+              )
+            ],
+          ),
         ),
       ),
     );
